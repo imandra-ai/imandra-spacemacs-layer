@@ -34,6 +34,12 @@
      :location (recipe
                 :fetcher github
                 :repo "aestheticintegration/imandra-mode")))
+     :location (recipe :fetcher github
+                       :repo "aestheticintegration/imandra-mode"))
+    lsp-mode
+    flycheck
+    flycheck-ocaml
+    merlin)
   "The list of Lisp packages required by the imandra layer.
 
 Each entry is either:
@@ -66,5 +72,82 @@ Each entry is either:
     :mode (("\\.iml$" . imandra-mode))
     :defer t))
 
+;; Copied from ocaml layer
+(defun imandra/post-init-flycheck ()
+  (spacemacs/enable-flycheck 'imandra-mode))
+
+;; Copied from ocaml layer
+(defun imandra/post-init-flycheck-ocaml ()
+  (use-package flycheck-ocaml
+    :if (and (configuration-layer/package-used-p 'flycheck)
+             (equal imandra-mode-backend 'merlin))
+    :defer t
+    :init
+    ;; when (equal imandra-mode-backend 'merlin)
+      (with-eval-after-load 'merlin
+        (message "imandra/post-init-flycheck-ocaml!")
+        (setq merlin-error-after-save nil)
+
+        ;; Copied from flycheck-ocaml
+        ;; TODO: create flycheck-imandra package?
+        (flycheck-define-generic-checker 'imandra-merlin
+          "A syntax checker for Imandra using Merlin Mode.
+
+See URL `https://github.com/the-lambda-church/merlin'."
+          :start #'flycheck-ocaml-merlin-start
+          :verify #'flycheck-verify-ocaml-merlin
+          :modes '(imandra-mode)
+          :predicate (lambda () (and merlin-mode
+                                     ;; Don't check if Merlin's own checking is
+                                     ;; enabled, to avoid duplicate overlays
+                                     (not merlin-error-after-save))))
+
+        (defun flycheck-imandra-setup ()
+          "Setup Flycheck Imandra.
+
+Add `imandra-merlin' to `flycheck-checkers'."
+          (interactive)
+          (add-to-list 'flycheck-checkers 'imandra-merlin))
+        ;; (flycheck-ocaml-setup)
+        (flycheck-imandra-setup))))
+
+(defun imandra/post-init-merlin ()
+  (use-package merlin
+    :defer t
+    :init
+    (if (equal imandra-mode-backend 'merlin)
+        (progn
+          ;; Copied from ocaml layer
+          (add-hook 'imandra-mode-hook 'merlin-mode)
+          (spacemacs/set-leader-keys-for-major-mode 'imandra-mode
+            "cp" 'merlin-project-check
+            "cv" 'merlin-goto-project-file
+            "Ec" 'merlin-error-check
+            "En" 'merlin-error-next
+            "EN" 'merlin-error-prev
+            "gb" 'merlin-pop-stack
+            "gG" 'spacemacs/merlin-locate-other-window
+            "gl" 'merlin-locate-ident
+            "gi" 'merlin-switch-to-ml
+            "gI" 'merlin-switch-to-mli
+            "go" 'merlin-occurrences
+            "hh" 'merlin-document
+            "ht" 'merlin-type-enclosing
+            "hT" 'merlin-type-expr
+            "rd" 'merlin-destruct)
+          (spacemacs/declare-prefix-for-mode 'tuareg-mode "mc" "compile/check")
+          (spacemacs/declare-prefix-for-mode 'tuareg-mode "mE" "errors")
+          (spacemacs/declare-prefix-for-mode 'tuareg-mode "mg" "goto")
+          (spacemacs/declare-prefix-for-mode 'tuareg-mode "mh" "help")
+          (spacemacs/declare-prefix-for-mode 'tuareg-mode "mr" "refactor"))
+
+      ;; Otherwise disable merlin-mode (automatically enabled by tuareg-mode)
+      (add-hook 'imandra-mode-hook (lambda () (merlin-mode -1))))))
+
+(defun imandra/post-init-lsp-mode ()
+  (use-package merlin
+    :if (equal imandra-mode-backend 'lsp)
+    :defer t
+    :init (add-hook 'imandra-mode-hook 'lsp-mode)))
 
 ;;; packages.el ends here
