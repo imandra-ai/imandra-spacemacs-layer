@@ -83,33 +83,31 @@ Each entry is either:
              (equal imandra-mode-backend 'merlin))
     :defer t
     :init
-    ;; when (equal imandra-mode-backend 'merlin)
-      (with-eval-after-load 'merlin
-        (message "imandra/post-init-flycheck-ocaml!")
-        (setq merlin-error-after-save nil)
+    (with-eval-after-load 'merlin
+      (setq merlin-error-after-save nil)
 
-        ;; Copied from flycheck-ocaml
-        ;; TODO: create flycheck-imandra package?
-        (flycheck-define-generic-checker 'imandra-merlin
-          "A syntax checker for Imandra using Merlin Mode.
+      ;; Copied from flycheck-ocaml
+      ;; TODO: create flycheck-imandra package?
+      (flycheck-define-generic-checker 'imandra-merlin
+        "A syntax checker for Imandra using Merlin Mode.
 
 See URL `https://github.com/the-lambda-church/merlin'."
-          :start #'flycheck-ocaml-merlin-start
-          :verify #'flycheck-verify-ocaml-merlin
-          :modes '(imandra-mode)
-          :predicate (lambda () (and merlin-mode
-                                     ;; Don't check if Merlin's own checking is
-                                     ;; enabled, to avoid duplicate overlays
-                                     (not merlin-error-after-save))))
+        :start #'flycheck-ocaml-merlin-start
+        :verify #'flycheck-verify-ocaml-merlin
+        :modes '(imandra-mode)
+        :predicate (lambda () (and merlin-mode
+                                   ;; Don't check if Merlin's own checking is
+                                   ;; enabled, to avoid duplicate overlays
+                                   (not merlin-error-after-save))))
 
-        (defun flycheck-imandra-setup ()
-          "Setup Flycheck Imandra.
+      (defun flycheck-imandra-setup ()
+        "Setup Flycheck Imandra.
 
 Add `imandra-merlin' to `flycheck-checkers'."
-          (interactive)
-          (add-to-list 'flycheck-checkers 'imandra-merlin))
-        ;; (flycheck-ocaml-setup)
-        (flycheck-imandra-setup))))
+        (interactive)
+        (add-to-list 'flycheck-checkers 'imandra-merlin))
+
+      (flycheck-imandra-setup))))
 
 (defun imandra/post-init-merlin ()
   (use-package merlin
