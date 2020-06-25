@@ -116,6 +116,8 @@ Add `imandra-merlin' to `flycheck-checkers'."
     (if (equal imandra-mode-backend 'merlin)
         (progn
           ;; Copied from ocaml layer
+          (add-to-list 'spacemacs-jump-handlers-imandra-mode
+                       'spacemacs/merlin-locate)
           (add-hook 'imandra-mode-hook 'merlin-mode)
           (spacemacs/set-leader-keys-for-major-mode 'imandra-mode
             "cp" 'merlin-project-check

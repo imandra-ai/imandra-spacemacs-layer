@@ -15,3 +15,5 @@
   :type '(choice
           (const :tag "LSP" lsp)
           (const :tag "merlin" merlin)))
+
+(spacemacs|define-jump-handlers imandra-mode)
