@@ -5,10 +5,10 @@ To use this configuration layer, add it to your =~/.spacemacs=. You will need to
 add =imandra= to the existing =dotspacemacs-configuration-layers= list in this
 file.
 
-```emacs
+#+begin_src emacs-lisp
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
      (imandra :variables imandra-mode-backend 'merlin)
      )
-```
+#+end_src
