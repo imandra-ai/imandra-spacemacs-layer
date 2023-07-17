@@ -31,11 +31,8 @@
 
 (defconst imandra-packages
   '((imandra-mode
-     :location (recipe
-                :fetcher github
-                :repo "aestheticintegration/imandra-mode")))
      :location (recipe :fetcher github
-                       :repo "aestheticintegration/imandra-mode"))
+                       :repo "imandra-ai/imandra-mode"))
     lsp-mode
     flycheck
     flycheck-ocaml
@@ -70,7 +67,19 @@ Each entry is either:
 (defun imandra/init-imandra-mode ()
   (use-package imandra-mode
     :mode (("\\.iml$" . imandra-mode))
-    :defer t))
+    :config
+    (progn
+      (if (and (equal imandra-mode-backend 'merlin)
+               (configuration-layer/package-used-p 'merlin))
+          (progn
+            (require 'imandra-mode-merlin)
+            (if (configuration-layer/package-used-p 'merlin-eldoc)
+                (imandra-merlin-setup-eldoc))
+            (if (configuration-layer/package-used-p 'merlin-company)
+                (imandra-merlin-setup-company))))
+      (if (and (equal imandra-mode-backend 'lsp)
+               (configuration-layer/package-used-p 'lsp-mode))
+          (require 'imandra-mode-lsp)))))
 
 ;; Copied from ocaml layer
 (defun imandra/post-init-flycheck ()
@@ -145,7 +154,7 @@ Add `imandra-merlin' to `flycheck-checkers'."
       (add-hook 'imandra-mode-hook (lambda () (merlin-mode -1))))))
 
 (defun imandra/post-init-lsp-mode ()
-  (use-package merlin
+  (use-package lsp-mode
     :if (equal imandra-mode-backend 'lsp)
     :defer t
     :init (add-hook 'imandra-mode-hook 'lsp-mode)))
