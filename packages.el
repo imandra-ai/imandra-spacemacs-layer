@@ -81,6 +81,13 @@ Each entry is either:
                (configuration-layer/package-used-p 'lsp-mode))
           (require 'imandra-mode-lsp)))))
 
+(defun imandra/init-ocamlformat ()
+  (use-package ocamlformat
+    :defer t
+    :init
+    (when imandra-format-on-save
+      (require 'imandra-mode-ocamlformat))))
+
 ;; Copied from ocaml layer
 (defun imandra/post-init-flycheck ()
   (spacemacs/enable-flycheck 'imandra-mode))
