@@ -9,6 +9,8 @@ file.
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     (imandra :variables imandra-mode-backend 'merlin)
+     (imandra :variables
+              imandra-mode-backend 'merlin
+              imandra-format-on-save t)
      )
 #+end_src

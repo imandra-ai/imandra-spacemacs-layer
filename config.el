@@ -17,3 +17,6 @@
           (const :tag "merlin" merlin)))
 
 (spacemacs|define-jump-handlers imandra-mode)
+
+(defvar imandra-format-on-save nil
+  "If non-nil, ocamlformat before saving.")
