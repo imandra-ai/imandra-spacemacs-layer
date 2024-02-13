@@ -36,7 +36,8 @@
     lsp-mode
     flycheck
     flycheck-ocaml
-    merlin)
+    merlin
+    ocamlformat)
   "The list of Lisp packages required by the imandra layer.
 
 Each entry is either:
